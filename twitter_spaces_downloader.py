@@ -8,6 +8,8 @@ import uuid
 import requests
 from urllib.parse import urlparse
 import yt_dlp
+import json
+import time
 
 def is_valid_twitter_url(url):
     """
@@ -39,7 +41,7 @@ def is_twitter_space_url(url):
     
     # التحقق من أن الرابط يحتوي على "spaces" في المسار
     parsed_url = urlparse(url)
-    return '/spaces/' in parsed_url.path
+    return '/spaces/' in parsed_url.path or '/i/spaces/' in parsed_url.path
 
 def is_twitter_status_url(url):
     """
@@ -58,6 +60,30 @@ def is_twitter_status_url(url):
     # التحقق من أن الرابط يحتوي على "status" في المسار
     parsed_url = urlparse(url)
     return '/status/' in parsed_url.path
+
+def extract_space_id_from_url(url):
+    """
+    استخراج معرف المحادثة من الرابط
+    
+    المعلمات:
+        url (str): رابط المحادثة
+        
+    العائد:
+        str: معرف المحادثة أو None في حالة الفشل
+    """
+    # للروابط المباشرة للمحادثات
+    if is_twitter_space_url(url):
+        match = re.search(r'/spaces/([^/?]+)', url)
+        if match:
+            return match.group(1)
+    
+    # للروابط من التغريدات
+    elif is_twitter_status_url(url):
+        # قد نحتاج إلى استخراج رابط المحادثة من التغريدة
+        # هذا يتطلب تحليل محتوى التغريدة
+        pass
+    
+    return None
 
 def download_twitter_space(url, output_dir=None):
     """
@@ -78,7 +104,8 @@ def download_twitter_space(url, output_dir=None):
         os.makedirs(output_dir, exist_ok=True)
         
         # إنشاء اسم ملف فريد
-        output_filename = os.path.join(output_dir, f"space_{uuid.uuid4().hex}.mp3")
+        unique_id = uuid.uuid4().hex
+        output_filename = os.path.join(output_dir, f"space_{unique_id}")
         
         print(f"جاري تحميل المحادثة من الرابط: {url}")
         print(f"سيتم حفظ الملف في: {output_filename}")
@@ -92,31 +119,45 @@ def download_twitter_space(url, output_dir=None):
                 'preferredcodec': 'mp3',
                 'preferredquality': '192',
             }],
-            'quiet': True,
-            'no_warnings': True
+            'verbose': True,  # تفعيل وضع التفصيل للتشخيص
+            'cookiefile': None,  # لا نحتاج إلى ملف كوكيز
+            'extractor_args': {
+                'twitter': {
+                    'api_key': 'AIzaSyDCvp5MTJLUdtBYEKYWXJrlLzu1zuKM6Xw',
+                }
+            }
         }
         
         # تحميل المحادثة
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([url])
+            info = ydl.extract_info(url, download=True)
+            
+            # طباعة معلومات التحميل للتشخيص
+            print(f"معلومات التحميل: {json.dumps(info, indent=2, ensure_ascii=False)}")
         
-        # التحقق من وجود الملف
-        if os.path.exists(output_filename):
-            return output_filename
-        
-        # البحث عن الملف في حالة تغيير الامتداد
-        mp3_filename = output_filename.replace('.mp3', '') + '.mp3'
+        # البحث عن الملف المحمل
+        mp3_filename = output_filename + '.mp3'
         if os.path.exists(mp3_filename):
             return mp3_filename
         
-        # البحث عن أي ملف تم إنشاؤه في المجلد
+        # البحث عن أي ملف تم إنشاؤه في المجلد بناءً على المعرف الفريد
         for file in os.listdir(output_dir):
-            if file.startswith("space_") and file.endswith(".mp3"):
+            if unique_id in file and file.endswith(".mp3"):
                 return os.path.join(output_dir, file)
+        
+        # البحث عن أي ملف تم إنشاؤه حديثًا في المجلد
+        files = [(os.path.join(output_dir, f), os.path.getmtime(os.path.join(output_dir, f))) 
+                for f in os.listdir(output_dir) if f.endswith('.mp3')]
+        
+        if files:
+            # ترتيب الملفات حسب وقت التعديل (الأحدث أولاً)
+            files.sort(key=lambda x: x[1], reverse=True)
+            # إرجاع أحدث ملف
+            return files[0][0]
                 
         return None
     except Exception as e:
-        print(f"خطأ في تحميل المحادثة: {e}")
+        print(f"خطأ في تحميل المحادثة: {str(e)}")
         return None
 
 # اختبار الوظيفة إذا تم تشغيل الملف مباشرة
