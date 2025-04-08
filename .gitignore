@@ -1,0 +1,31 @@
+# .gitignore for Twitter Spaces Downloader
+
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ignore downloaded files
+downloads/
+*.mp3
+*.m4a
+*.wav
+
+# Ignore environment files
+.env
+venv/
+env/
+.venv/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Ignore log files
+*.log
