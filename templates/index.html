@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحميل محادثات Twitter Spaces</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>تحميل محادثات Twitter Spaces</h1>
+            <p class="subtitle">أداة سهلة لتحميل المحادثات الصوتية من Twitter Spaces</p>
+        </header>
+
+        <main>
+            <div class="download-form">
+                <form id="downloadForm" action="/download" method="POST">
+                    <div class="input-group">
+                        <input type="text" id="url" name="url" placeholder="ضع رابط محادثة Twitter Spaces أو رابط تغريدة هنا" required>
+                        <button type="submit" class="btn-download">
+                            <i class="fas fa-download"></i> تحميل
+                        </button>
+                    </div>
+                    <div class="examples">
+                        <p>أمثلة:</p>
+                        <ul>
+                            <li>رابط محادثة: https://twitter.com/i/spaces/1YqJDqDgBjExV</li>
+                            <li>رابط تغريدة: https://x.com/dbasdosari1/status/1908973036621144202</li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div id="status" class="status-container" style="display: none;">
+                <div class="status-box">
+                    <div id="statusMessage" class="status-message">جاري التحميل...</div>
+                    <div class="progress-container">
+                        <div id="progressBar" class="progress-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="result" class="result-container" style="display: none;">
+                <div class="result-box">
+                    <h3>تم التحميل بنجاح!</h3>
+                    <p>يمكنك الآن تحميل الملف الصوتي:</p>
+                    <a id="downloadLink" href="#" class="btn-download-file">
+                        <i class="fas fa-file-audio"></i> تحميل الملف الصوتي
+                    </a>
+                </div>
+            </div>
+
+            <div id="error" class="error-container" style="display: none;">
+                <div class="error-box">
+                    <h3>حدث خطأ!</h3>
+                    <p id="errorMessage">لم نتمكن من تحميل المحادثة. يرجى التأكد من صحة الرابط والمحاولة مرة أخرى.</p>
+                </div>
+            </div>
+        </main>
+
+        <section class="features">
+            <h2>مميزات الموقع</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-bolt"></i>
+                    <h3>سريع وسهل</h3>
+                    <p>تحميل محادثات Twitter Spaces بنقرة زر واحدة</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-music"></i>
+                    <h3>جودة عالية</h3>
+                    <p>تحميل الملفات الصوتية بأفضل جودة متاحة</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-globe"></i>
+                    <h3>بدون قيود</h3>
+                    <p>تحميل محادثات Twitter Spaces من أي مكان في العالم</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h3>متوافق مع الجوال</h3>
+                    <p>يعمل على جميع الأجهزة بما في ذلك الهواتف والأجهزة اللوحية</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="how-to-use">
+            <h2>كيفية الاستخدام</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>انسخ الرابط</h3>
+                        <p>انسخ رابط محادثة Twitter Spaces أو رابط تغريدة تحتوي على محادثة</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>الصق الرابط</h3>
+                        <p>الصق الرابط في حقل الإدخال أعلاه</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>اضغط على تحميل</h3>
+                        <p>انقر على زر التحميل وانتظر حتى تكتمل العملية</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>حمّل الملف</h3>
+                        <p>بمجرد اكتمال المعالجة، انقر على زر تحميل الملف الصوتي</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>&copy; 2025 تحميل محادثات Twitter Spaces. جميع الحقوق محفوظة لـ <a href="https://twitter.com/o11134" target="_blank">@o11134</a></p>
+            <p>تم إنشاء هذا الموقع بواسطة الذكاء الاصطناعي</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
