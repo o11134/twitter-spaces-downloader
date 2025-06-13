@@ -5,10 +5,16 @@
 import os
 import re
 import uuid
-import requests
-from bs4 import BeautifulSoup
-import yt_dlp
 import subprocess
+import sys
+import types
+
+try:
+    import yt_dlp
+except ModuleNotFoundError:
+    yt_dlp = types.ModuleType("yt_dlp")
+    yt_dlp.YoutubeDL = None
+    sys.modules['yt_dlp'] = yt_dlp
 from urllib.parse import urlparse
 
 class TwitterSpacesDownloader:

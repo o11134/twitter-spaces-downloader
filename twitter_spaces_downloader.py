@@ -79,10 +79,17 @@ def extract_space_id_from_url(url):
     
     # للروابط من التغريدات
     elif is_twitter_status_url(url):
-        # قد نحتاج إلى استخراج رابط المحادثة من التغريدة
-        # هذا يتطلب تحليل محتوى التغريدة
-        pass
-    
+        # محاولة استخراج رابط المحادثة من التغريدة
+        headers = {"User-Agent": "Mozilla/5.0"}
+        try:
+            resp = requests.get(url, headers=headers, timeout=10)
+            resp.raise_for_status()
+            m = re.search(r"https://(?:twitter|x)\.com/(?:i/)?spaces/[a-zA-Z0-9]+", resp.text)
+            if m:
+                return m.group(0).split("/")[-1]
+        except Exception as e:
+            print(f"خطأ في استخراج معرف Spaces من التغريدة: {e}")
+
     return None
 
 def download_twitter_space(url, output_dir=None):
@@ -107,25 +114,26 @@ def download_twitter_space(url, output_dir=None):
         unique_id = uuid.uuid4().hex
         output_filename = os.path.join(output_dir, f"space_{unique_id}")
         
+        # إذا كان الرابط رابط تغريدة، نحاول استخراج رابط المحادثة الحقيقي
+        if is_twitter_status_url(url):
+            space_id = extract_space_id_from_url(url)
+            if space_id:
+                url = f"https://twitter.com/i/spaces/{space_id}"
+
         print(f"جاري تحميل المحادثة من الرابط: {url}")
         print(f"سيتم حفظ الملف في: {output_filename}")
         
         # إعداد خيارات yt-dlp
         ydl_opts = {
             'format': 'bestaudio/best',
-            'outtmpl': output_filename,
+            'outtmpl': output_filename + '.%(ext)s',
             'postprocessors': [{
                 'key': 'FFmpegExtractAudio',
                 'preferredcodec': 'mp3',
                 'preferredquality': '192',
             }],
             'verbose': True,  # تفعيل وضع التفصيل للتشخيص
-            'cookiefile': None,  # لا نحتاج إلى ملف كوكيز
-            'extractor_args': {
-                'twitter': {
-                    'api_key': 'AIzaSyDCvp5MTJLUdtBYEKYWXJrlLzu1zuKM6Xw',
-                }
-            }
+            'cookiefile': None  # لا نحتاج إلى ملف كوكيز
         }
         
         # تحميل المحادثة
