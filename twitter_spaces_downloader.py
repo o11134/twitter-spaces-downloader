@@ -120,12 +120,8 @@ def download_twitter_space(url, output_dir=None):
                 'preferredquality': '192',
             }],
             'verbose': True,  # تفعيل وضع التفصيل للتشخيص
-            'cookiefile': None,  # لا نحتاج إلى ملف كوكيز
-            'extractor_args': {
-                'twitter': {
-                    'api_key': 'AIzaSyDCvp5MTJLUdtBYEKYWXJrlLzu1zuKM6Xw',
-                }
-            }
+            'quiet': False,  # عرض الرسائل
+            'no_warnings': False,  # عرض التحذيرات
         }
         
         # تحميل المحادثة
